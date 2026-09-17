@@ -14,7 +14,6 @@ export const DevicesPage: React.FC = () => {
     { id: 'DEV003', user: 'Robert Lee', status: 'Low Battery', battery: 18, lastSeen: '12 min ago' },
     { id: 'DEV004', user: 'Alice Brown', status: 'Online', battery: 76, lastSeen: '3 min ago' },
     { id: 'DEV005', user: 'David Kumar', status: 'Offline', battery: 0, lastSeen: '25 min ago' },
-    { id: 'DEV006', user: 'Emma Wilson', status: 'Offline', battery: 0, lastSeen: '1 hour ago' },
   ]);
 
   const handleAddDevice = (e: React.FormEvent) => {
@@ -46,8 +45,8 @@ export const DevicesPage: React.FC = () => {
   });
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="space-y-5">
+      {/* Header matching Screen 4 */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-slate-900 tracking-tight">Devices</h1>
@@ -56,15 +55,15 @@ export const DevicesPage: React.FC = () => {
 
         <button
           onClick={() => setShowAddModal(true)}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm transition self-start"
+          className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-xs transition self-start"
         >
           <Plus className="w-4 h-4" />
           <span>Add Device</span>
         </button>
       </div>
 
-      {/* Filter Tabs & Search */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 space-y-4">
+      {/* Container matching Screen 4 */}
+      <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-5 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="relative w-64">
             <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
@@ -73,39 +72,40 @@ export const DevicesPage: React.FC = () => {
               placeholder="Search devices..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-blue-500"
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-blue-500"
             />
           </div>
 
-          <div className="flex items-center space-x-1 text-xs">
+          {/* Filter Pills */}
+          <div className="flex items-center space-x-1.5 text-xs font-medium">
             <button
               onClick={() => setFilter('all')}
-              className={`px-3 py-1.5 rounded-lg font-medium transition ${
-                filter === 'all' ? 'bg-slate-100 text-slate-800' : 'text-slate-500 hover:text-slate-800'
+              className={`px-3 py-1 rounded-md transition ${
+                filter === 'all' ? 'bg-[#0e1d34] text-white font-semibold' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
             >
               All (22)
             </button>
             <button
               onClick={() => setFilter('online')}
-              className={`px-3 py-1.5 rounded-lg font-medium transition ${
-                filter === 'online' ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'text-slate-500 hover:text-slate-800'
+              className={`px-3 py-1 rounded-md transition ${
+                filter === 'online' ? 'bg-emerald-100 text-emerald-800 font-semibold' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
               }`}
             >
               Online (22)
             </button>
             <button
               onClick={() => setFilter('low')}
-              className={`px-3 py-1.5 rounded-lg font-medium transition ${
-                filter === 'low' ? 'bg-amber-50 text-amber-600 border border-amber-200' : 'text-slate-500 hover:text-slate-800'
+              className={`px-3 py-1 rounded-md transition ${
+                filter === 'low' ? 'bg-amber-100 text-amber-800 font-semibold' : 'bg-amber-50 text-amber-700 hover:bg-amber-100'
               }`}
             >
               Low Battery (3)
             </button>
             <button
               onClick={() => setFilter('offline')}
-              className={`px-3 py-1.5 rounded-lg font-medium transition ${
-                filter === 'offline' ? 'bg-red-50 text-red-600 border border-red-200' : 'text-slate-500 hover:text-slate-800'
+              className={`px-3 py-1 rounded-md transition ${
+                filter === 'offline' ? 'bg-red-100 text-red-800 font-semibold' : 'bg-red-50 text-red-700 hover:bg-red-100'
               }`}
             >
               Offline (7)
@@ -129,10 +129,10 @@ export const DevicesPage: React.FC = () => {
             <tbody className="divide-y divide-slate-100">
               {filtered.map((d) => (
                 <tr key={d.id} className="hover:bg-slate-50 transition">
-                  <td className="py-3.5 font-mono font-bold text-slate-800">{d.id}</td>
-                  <td className="py-3.5 font-medium text-slate-800">{d.user}</td>
-                  <td className="py-3.5">
-                    <span className={`px-2.5 py-0.5 rounded-md text-[11px] font-semibold border ${
+                  <td className="py-3 font-mono font-bold text-slate-800">{d.id}</td>
+                  <td className="py-3 font-medium text-slate-800">{d.user}</td>
+                  <td className="py-3">
+                    <span className={`px-2.5 py-0.5 rounded text-[11px] font-semibold border ${
                       d.status === 'Online'
                         ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                         : d.status === 'Low Battery'
@@ -142,12 +142,12 @@ export const DevicesPage: React.FC = () => {
                       {d.status}
                     </span>
                   </td>
-                  <td className="py-3.5">
+                  <td className="py-3">
                     {d.status === 'Offline' ? (
                       <span className="text-slate-400 font-mono">--</span>
                     ) : (
                       <div className="flex items-center gap-2">
-                        <div className="w-20 bg-slate-100 rounded-full h-2 overflow-hidden">
+                        <div className="w-20 bg-slate-100 rounded-full h-1.5 overflow-hidden">
                           <div
                             className={`h-full rounded-full ${d.battery < 20 ? 'bg-amber-500' : 'bg-emerald-500'}`}
                             style={{ width: `${d.battery}%` }}
@@ -157,8 +157,8 @@ export const DevicesPage: React.FC = () => {
                       </div>
                     )}
                   </td>
-                  <td className="py-3.5 text-slate-500">{d.lastSeen}</td>
-                  <td className="py-3.5 text-right">
+                  <td className="py-3 text-slate-500">{d.lastSeen}</td>
+                  <td className="py-3 text-right">
                     <button className="p-1 text-slate-400 hover:text-slate-700 rounded-lg">
                       <MoreHorizontal className="w-4 h-4" />
                     </button>
@@ -193,7 +193,7 @@ export const DevicesPage: React.FC = () => {
                   value={newDeviceId}
                   onChange={(e) => setNewDeviceId(e.target.value)}
                   placeholder="DEV007"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
@@ -204,7 +204,7 @@ export const DevicesPage: React.FC = () => {
                   value={newUserId}
                   onChange={(e) => setNewUserId(e.target.value)}
                   placeholder="e.g. Eleanor Vance"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
@@ -212,13 +212,13 @@ export const DevicesPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium"
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold shadow-sm"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-semibold shadow-xs"
                 >
                   Register Device
                 </button>

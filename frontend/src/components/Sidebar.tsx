@@ -27,18 +27,13 @@ export type PageId =
 interface SidebarProps {
   currentPage: PageId;
   onNavigate: (page: PageId) => void;
-  pendingFallsCount?: number;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({
-  currentPage,
-  onNavigate,
-  pendingFallsCount = 1
-}) => {
+export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => {
   const navItems = [
     { id: 'dashboard' as PageId, label: 'Dashboard', icon: LayoutDashboard },
     { id: 'monitoring' as PageId, label: 'Monitoring', icon: Activity },
-    { id: 'events' as PageId, label: 'Fall Events', icon: AlertTriangle, badge: pendingFallsCount > 0 ? pendingFallsCount : undefined },
+    { id: 'events' as PageId, label: 'Fall Events', icon: AlertTriangle },
     { id: 'devices' as PageId, label: 'Devices', icon: Smartphone },
     { id: 'users' as PageId, label: 'Users', icon: Users },
     { id: 'agent' as PageId, label: 'AI Agent', icon: Bot },
@@ -48,56 +43,40 @@ export const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   return (
-    <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col shrink-0 border-r border-slate-800 min-h-screen">
+    <aside className="w-56 bg-white border-r border-slate-200 flex flex-col shrink-0 min-h-screen">
       {/* Brand Header */}
-      <div className="p-5 border-b border-slate-800 flex items-center space-x-3">
-        <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-sm">
-          <ShieldAlert className="w-6 h-6" />
+      <div className="px-5 py-4 flex items-center space-x-2.5">
+        <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+          <ShieldAlert className="w-5 h-5" />
         </div>
         <div>
-          <div className="font-bold text-white tracking-tight text-base flex items-center gap-1.5">
-            <span>FallGuard AI</span>
-          </div>
-          <div className="text-[11px] text-slate-400">Safer Lives, Smarter Care.</div>
+          <div className="font-bold text-slate-900 tracking-tight text-sm leading-tight">FallGuard AI</div>
+          <div className="text-[10px] text-slate-400 leading-tight">Safer Lives, Smarter Care.</div>
         </div>
       </div>
 
-      {/* Navigation List */}
-      <nav className="flex-1 px-3 py-4 space-y-1">
+      {/* Navigation Links */}
+      <nav className="flex-1 px-3 py-3 space-y-1">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = currentPage === item.id || (item.id === 'events' && currentPage === 'event-detail');
+
           return (
             <button
               key={item.id}
               onClick={() => onNavigate(item.id)}
-              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
+              className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-medium transition-colors text-left ${
                 isActive
-                  ? 'bg-blue-600 text-white font-semibold shadow-md shadow-blue-600/20'
-                  : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60'
+                  ? 'bg-[#0e1d34] text-white font-semibold'
+                  : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
               }`}
             >
-              <div className="flex items-center space-x-3">
-                <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
-                <span>{item.label}</span>
-              </div>
-              {item.badge && (
-                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                  isActive ? 'bg-white text-blue-600' : 'bg-red-500/20 text-red-400 border border-red-500/30'
-                }`}>
-                  {item.badge}
-                </span>
-              )}
+              <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+              <span>{item.label}</span>
             </button>
           );
         })}
       </nav>
-
-      {/* Footer Prototype Notice */}
-      <div className="p-4 border-t border-slate-800 text-[11px] text-slate-500 text-center">
-        <div className="text-slate-400 font-medium">FallGuard AI Platform</div>
-        <div className="text-[10px] text-slate-500 mt-0.5">Research Prototype v0.1.0</div>
-      </div>
     </aside>
   );
 };
