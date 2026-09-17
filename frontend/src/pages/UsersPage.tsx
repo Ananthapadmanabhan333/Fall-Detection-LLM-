@@ -90,7 +90,7 @@ export const UsersPage: React.FC = () => {
 
               <div className="flex items-center space-x-12">
                 <div className="flex items-center gap-1.5">
-                  <span className={`w-2 h-2 rounded-full ${u.status === 'Active' ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                  <span className={`w-2 h-2 rounded-full ${u.status === 'Active' ? 'bg-emerald-500' : 'bg-slate-400'}`} />
                   <span className="text-xs font-medium text-slate-700">{u.status}</span>
                 </div>
 

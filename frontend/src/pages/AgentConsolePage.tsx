@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CheckCircle2, Clock, Wrench, ShieldAlert, X, Eye } from 'lucide-react';
+import { CheckCircle2, Clock, Wrench, X, Eye } from 'lucide-react';
 import { api } from '../services/api';
 
 export const AgentConsolePage: React.FC = () => {
@@ -95,10 +95,10 @@ export const AgentConsolePage: React.FC = () => {
         </div>
       </div>
 
-      {/* 3-Column Layout matching Screen 6 */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-        {/* Left Column: Live Trace */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-5 space-y-4">
+      {/* Layout matching Screen 6 */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* Left Column: Live Trace (approx 6 cols) */}
+        <div className="lg:col-span-6 bg-white rounded-xl border border-slate-200 shadow-xs p-5 space-y-4">
           <div className="flex items-center space-x-2 text-xs font-bold text-slate-900">
             <Clock className="w-4 h-4 text-blue-600" />
             <h2>Live Trace</h2>
@@ -120,7 +120,7 @@ export const AgentConsolePage: React.FC = () => {
             <div>
               <span className="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-white" />
               <div className="font-semibold text-slate-800">Retrieving relevant protocol</div>
-              <div className="text-[10px] text-slate-400">14:32:17 &bull; High-risk "fall protocol v2"</div>
+              <div className="text-[10px] text-slate-400">14:32:17 &bull; High-risk "fall protocol (v2)"</div>
             </div>
 
             <div>
@@ -130,14 +130,14 @@ export const AgentConsolePage: React.FC = () => {
             </div>
 
             <div>
-              <span className="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-blue-600 ring-4 ring-white" />
+              <span className="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-white" />
               <div className="font-semibold text-slate-800">Requesting user confirmation</div>
-              <div className="text-[10px] text-slate-400">14:32:19 &bull; 15 seconds timeout</div>
+              <div className="text-[10px] text-slate-400">14:32:21 &bull; Notification sent</div>
             </div>
 
             <div>
               <span className={`absolute -left-6 top-1 w-2.5 h-2.5 rounded-full ring-4 ring-white ${
-                escalated ? 'bg-red-500' : canceled ? 'bg-emerald-500' : 'bg-amber-500 animate-ping'
+                escalated ? 'bg-red-500' : canceled ? 'bg-emerald-500' : 'bg-amber-400'
               }`} />
               <div className="font-semibold text-slate-800">
                 {escalated ? 'Emergency Escalation dispatched' : canceled ? 'Alert cancelled by user' : 'Waiting for response...'}
@@ -148,8 +148,8 @@ export const AgentConsolePage: React.FC = () => {
             {escalated && (
               <div className="animate-in fade-in">
                 <span className="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-red-600 ring-4 ring-white" />
-                <div className="font-semibold text-red-600">Caregiver notified via SMS</div>
-                <div className="text-[10px] text-slate-400">14:32:32 &bull; Sarah Jenkins (+1-555-0199)</div>
+                <div className="font-semibold text-red-600">Caregiver alerted</div>
+                <div className="text-[10px] text-slate-400">14:32:32 &bull; Primary caregiver notified</div>
               </div>
             )}
 
@@ -174,110 +174,114 @@ export const AgentConsolePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Middle Column: Tools Used & Agent Decision */}
-        <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-5 space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2 text-xs font-bold text-slate-900">
-                <Wrench className="w-4 h-4 text-blue-600" />
-                <h2>Tools Used</h2>
+        {/* Right Area (approx 6 cols) */}
+        <div className="lg:col-span-6 space-y-6">
+          {/* Top Row: Tools Used & Suggested Next Action side by side */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+            {/* Tools Used Card */}
+            <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xs font-bold text-slate-900">Tools Used</h2>
+                <span className="text-[9px] text-slate-400">Click to inspect</span>
               </div>
-              <span className="text-[10px] text-slate-400">Click to inspect payload</span>
-            </div>
 
-            <div className="space-y-1.5 text-xs font-mono">
-              {[
-                'get_user_profile()',
-                'get_recent_fall_events()',
-                'retrieve_protocol()',
-                'get_device_status()',
-                'send_notification()',
-                'start_emergency_workflow()',
-                'log_incident()'
-              ].map((toolName) => {
-                const isExecuted =
-                  toolName !== 'start_emergency_workflow()' && toolName !== 'log_incident()'
-                    ? true
-                    : escalated || canceled;
+              <div className="space-y-1 text-xs font-mono">
+                {[
+                  'get_user_profile()',
+                  'get_recent_fall_events()',
+                  'retrieve_protocol()',
+                  'get_device_status()',
+                  'send_notification()',
+                  'start_emergency_workflow()',
+                  'log_incident()'
+                ].map((toolName) => {
+                  const isExecuted =
+                    toolName !== 'start_emergency_workflow()' && toolName !== 'log_incident()'
+                      ? true
+                      : escalated || canceled;
 
-                return (
-                  <div
-                    key={toolName}
-                    onClick={() => {
-                      const details = toolDetailsMap[toolName];
-                      if (details) setSelectedTool({ name: toolName, ...details });
-                    }}
-                    className={`flex items-center justify-between p-1.5 rounded-lg cursor-pointer hover:bg-slate-50 transition ${
-                      isExecuted ? 'text-emerald-700 font-medium' : 'text-slate-400'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      {isExecuted ? (
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                      ) : (
-                        <div className="w-3.5 h-3.5 rounded-full border border-slate-300 shrink-0" />
-                      )}
-                      <span>{toolName}</span>
+                  return (
+                    <div
+                      key={toolName}
+                      onClick={() => {
+                        const details = toolDetailsMap[toolName];
+                        if (details) setSelectedTool({ name: toolName, ...details });
+                      }}
+                      className={`flex items-center justify-between p-1 rounded-md cursor-pointer hover:bg-slate-50 transition ${
+                        isExecuted ? 'text-emerald-700 font-medium' : 'text-slate-400'
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        {isExecuted ? (
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        ) : (
+                          <div className="w-3.5 h-3.5 rounded-full border border-slate-300 shrink-0" />
+                        )}
+                        <span className="truncate text-[11px]">{toolName}</span>
+                      </div>
+                      <Eye className="w-3 h-3 text-slate-400 opacity-0 group-hover:opacity-100 shrink-0" />
                     </div>
-                    <Eye className="w-3 h-3 text-slate-400 opacity-0 group-hover:opacity-100" />
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-5 space-y-3">
-            <h2 className="text-xs font-bold text-slate-900">Agent Decision</h2>
-            <div className="bg-sky-50 border border-sky-100 rounded-lg p-3 text-xs text-sky-900 font-medium leading-relaxed">
-              "High fall probability with impact detected and low post-impact movement. User confirmation requested."
-            </div>
-          </div>
-        </div>
-
-        {/* Right Column: Suggested Next Action */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-5 space-y-4">
-          <h2 className="text-xs font-bold text-slate-900">Suggested Next Action</h2>
-
-          <div className="border border-slate-200 rounded-xl p-4 text-center space-y-1.5 bg-slate-50/50">
-            <div className="text-xs font-bold text-slate-800">
-              {escalated
-                ? 'Emergency Escalated'
-                : canceled
-                ? 'Alert Cancelled (Confirmed Safe)'
-                : 'Wait for user response'}
-            </div>
-
-            {!escalated && !canceled && (
-              <div className="text-xl font-bold font-mono text-slate-900">
-                {countdown}s remaining
+                  );
+                })}
               </div>
-            )}
-          </div>
-
-          <div className="space-y-2 pt-1">
-            <button
-              disabled={isEvaluating || canceled || escalated}
-              onClick={handleCancelAlert}
-              className="w-full py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-lg text-xs font-semibold transition disabled:opacity-50"
-            >
-              Cancel Alert
-            </button>
-
-            <button
-              disabled={isEvaluating || canceled || escalated}
-              onClick={handleEscalateNow}
-              className="w-full py-2 bg-[#dc2626] hover:bg-red-700 text-white rounded-lg text-xs font-semibold shadow-xs transition disabled:opacity-50"
-            >
-              Escalate Now
-            </button>
-          </div>
-
-          {escalated && (
-            <div className="text-[11px] text-red-600 bg-red-50 p-2.5 rounded-lg border border-red-200 flex items-center gap-1.5 font-medium animate-in fade-in">
-              <ShieldAlert className="w-4 h-4 shrink-0" />
-              <span>Caregiver notified. Emergency protocol dispatched.</span>
             </div>
-          )}
+
+            {/* Suggested Next Action Card */}
+            <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-4 space-y-3 flex flex-col items-center text-center">
+              <h2 className="text-xs font-bold text-slate-900 self-start">Suggested Next Action</h2>
+
+              {/* Circular Amber Timer Ring */}
+              <div className="w-12 h-12 rounded-full border-2 border-amber-400 flex items-center justify-center text-amber-500 bg-amber-50/50 my-1">
+                <Clock className="w-5 h-5" />
+              </div>
+
+              <div>
+                <div className="text-xs font-bold text-slate-800">
+                  {escalated
+                    ? 'Emergency Escalated'
+                    : canceled
+                    ? 'Alert Cancelled'
+                    : 'Wait for user response'}
+                </div>
+                {!escalated && !canceled && (
+                  <div className="text-xs font-mono text-slate-500 mt-0.5">
+                    {countdown}s remaining
+                  </div>
+                )}
+              </div>
+
+              <div className="w-full space-y-2 pt-2">
+                <button
+                  disabled={isEvaluating || canceled || escalated}
+                  onClick={handleCancelAlert}
+                  className="w-full py-1.5 bg-white hover:bg-red-50 text-red-600 border border-red-200 rounded-lg text-xs font-semibold transition disabled:opacity-50"
+                >
+                  Cancel Alert
+                </button>
+
+                <button
+                  disabled={isEvaluating || canceled || escalated}
+                  onClick={handleEscalateNow}
+                  className="w-full py-1.5 bg-[#ef4444] hover:bg-red-600 text-white rounded-lg text-xs font-semibold shadow-xs transition disabled:opacity-50"
+                >
+                  Escalate Now
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Row: Agent Decision Card */}
+          <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-4 space-y-2.5">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xs font-bold text-slate-900">Agent Decision</h2>
+              <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-[10px] font-bold">
+                Step 4
+              </span>
+            </div>
+            <div className="bg-sky-50/70 border border-sky-100 rounded-lg p-3 text-xs text-sky-950 font-medium leading-relaxed">
+              High fall probability with impact detected and low post-impact movement. User confirmation requested.
+            </div>
+          </div>
         </div>
       </div>
 

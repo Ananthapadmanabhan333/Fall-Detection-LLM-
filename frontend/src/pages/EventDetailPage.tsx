@@ -51,13 +51,16 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({ eventId = 'FAL
     <div className="space-y-5">
       {/* Top Header matching Screen 3 */}
       <div>
-        <button
-          onClick={onBack}
-          className="text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1 mb-1.5 transition"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Back to Events</span>
-        </button>
+        <div className="flex items-center justify-between mb-1.5">
+          <button
+            onClick={onBack}
+            className="text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1 transition"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Back to Events</span>
+          </button>
+          <span className="text-xs text-slate-400 font-medium">Sep 17, 2025 14:32</span>
+        </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center space-x-3">
@@ -114,10 +117,11 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({ eventId = 'FAL
         ))}
       </div>
 
-      {/* Tab 1: Overview */}
+      {/* Tab 1: Overview matching Screen 3 Column Structure */}
       {activeTab === 'overview' && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+          {/* Left Column: Event Information + Sensor Data Preview */}
+          <div className="space-y-6">
             {/* Event Information Card */}
             <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-5 space-y-3">
               <h2 className="text-xs font-bold text-slate-900">Event Information</h2>
@@ -135,7 +139,7 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({ eventId = 'FAL
 
                 <div className="py-2 flex justify-between">
                   <span className="text-slate-400">Date & Time</span>
-                  <span className="font-mono text-slate-700">Sep 17, 2025 14:32:15</span>
+                  <span className="font-mono text-slate-700">Sep 12, 2025 14:32:15</span>
                 </div>
 
                 <div className="py-2 flex justify-between items-center">
@@ -176,72 +180,7 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({ eventId = 'FAL
               </div>
             </div>
 
-            {/* Event Timeline Card */}
-            <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-5 space-y-3">
-              <h2 className="text-xs font-bold text-slate-900">Event Timeline</h2>
-
-              <div className="relative pl-6 space-y-3 text-xs before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
-                <div>
-                  <span className="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-white" />
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold text-slate-800">Sudden acceleration detected</span>
-                    <span className="font-mono text-slate-400 text-[11px]">14:32:15</span>
-                  </div>
-                </div>
-
-                <div>
-                  <span className="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-white" />
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold text-slate-800">Impact detected</span>
-                    <span className="font-mono text-slate-400 text-[11px]">14:32:16</span>
-                  </div>
-                </div>
-
-                <div>
-                  <span className="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-white" />
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold text-slate-800">Low movement after impact</span>
-                    <span className="font-mono text-slate-400 text-[11px]">14:32:16</span>
-                  </div>
-                </div>
-
-                <div>
-                  <span className="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-blue-600 ring-4 ring-white" />
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold text-slate-800">AI agent activated</span>
-                    <span className="font-mono text-slate-400 text-[11px]">14:32:17</span>
-                  </div>
-                </div>
-
-                <div>
-                  <span className="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-blue-600 ring-4 ring-white" />
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold text-slate-800">User confirmation requested</span>
-                    <span className="font-mono text-slate-400 text-[11px]">14:32:19</span>
-                  </div>
-                </div>
-
-                <div>
-                  <span className="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-red-500 ring-4 ring-white" />
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold text-red-600">No response (15s timeout)</span>
-                    <span className="font-mono text-slate-400 text-[11px]">14:32:31</span>
-                  </div>
-                </div>
-
-                <div>
-                  <span className="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-red-500 ring-4 ring-white" />
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold text-red-600">Caregiver alerted</span>
-                    <span className="font-mono text-slate-400 text-[11px]">14:32:32</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom Grid: Sensor Data Preview & Location Widget */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Sensor Data Preview Card */}
             <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-5 space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-bold text-slate-900">Sensor Data Preview</h3>
@@ -251,40 +190,112 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({ eventId = 'FAL
                 </div>
               </div>
 
-              <div className="h-32 bg-slate-50 border border-slate-100 rounded-lg flex items-center justify-center relative overflow-hidden">
-                <svg className="w-full h-full text-blue-500" viewBox="0 0 400 100" preserveAspectRatio="none">
+              <div className="h-36 bg-slate-50/50 border border-slate-100 rounded-lg flex items-center justify-center relative overflow-hidden p-2">
+                <svg className="w-full h-full" viewBox="0 0 400 120" preserveAspectRatio="none">
+                  {/* Gridlines */}
+                  <line x1="0" y1="20" x2="400" y2="20" stroke="#f1f5f9" strokeWidth="1" />
+                  <line x1="0" y1="60" x2="400" y2="60" stroke="#e2e8f0" strokeWidth="1" strokeDasharray="3 3" />
+                  <line x1="0" y1="100" x2="400" y2="100" stroke="#f1f5f9" strokeWidth="1" />
+
+                  {/* Waveforms */}
+                  {/* X-axis Red line with fall shock peak */}
                   <path
-                    d="M 0 50 Q 50 48, 100 50 T 180 50 L 195 90 L 205 10 L 215 75 L 225 45 L 240 50 L 400 50"
+                    d="M 0 60 Q 50 58, 100 60 T 170 60 L 185 105 L 195 15 L 205 90 L 215 50 L 230 60 L 400 60"
                     fill="none"
-                    stroke="#2563eb"
-                    strokeWidth="2"
+                    stroke="#ef4444"
+                    strokeWidth="1.5"
                   />
+                  {/* Y-axis Blue line */}
                   <path
-                    d="M 0 55 Q 50 53, 100 54 T 180 54 L 195 80 L 205 20 L 215 65 L 225 52 L 240 55 L 400 55"
+                    d="M 0 65 Q 50 62, 100 64 T 170 64 L 185 92 L 195 28 L 205 78 L 215 58 L 230 65 L 400 65"
                     fill="none"
-                    stroke="#f59e0b"
+                    stroke="#3b82f6"
+                    strokeWidth="1.5"
+                  />
+                  {/* Z-axis Green line */}
+                  <path
+                    d="M 0 55 Q 50 52, 100 54 T 170 54 L 185 85 L 195 35 L 205 72 L 215 52 L 230 55 L 400 55"
+                    fill="none"
+                    stroke="#10b981"
                     strokeWidth="1.5"
                   />
                 </svg>
-                <div className="absolute top-2 right-2 text-[10px] font-mono bg-white px-2 py-0.5 rounded border border-slate-200 text-slate-600 shadow-xs">
+                <div className="absolute left-2 top-2 text-[9px] font-mono text-slate-400">
+                  <div>20</div>
+                  <div className="mt-2">0</div>
+                  <div className="mt-2">-20</div>
+                </div>
+                <div className="absolute right-2 top-2 text-[10px] font-mono bg-white px-2 py-0.5 rounded border border-slate-200 text-red-600 font-bold shadow-xs">
                   Peak: 3.8g (14:32:16)
                 </div>
               </div>
+              <div className="flex justify-between text-[10px] text-slate-400 font-mono px-1">
+                <span>0s</span>
+                <span>5s</span>
+                <span>10s</span>
+                <span>15s</span>
+                <span>20s</span>
+                <span>25s</span>
+                <span>30s</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Event Timeline + Location */}
+          <div className="space-y-6">
+            {/* Event Timeline Card */}
+            <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-5 space-y-3">
+              <h2 className="text-xs font-bold text-slate-900">Event Timeline</h2>
+
+              <div className="relative pl-1 space-y-3.5 text-xs">
+                {[
+                  { time: '14:32:15', text: 'Sudden acceleration detected', dot: 'bg-emerald-500' },
+                  { time: '14:32:16', text: 'Impact detected', dot: 'bg-emerald-500' },
+                  { time: '14:32:16', text: 'Low movement after impact', dot: 'bg-emerald-500' },
+                  { time: '14:32:17', text: 'AI agent activated', dot: 'bg-blue-600' },
+                  { time: '14:32:19', text: 'User confirmation requested', dot: 'bg-blue-600' },
+                  { time: '14:32:31', text: 'No response (15s timeout)', dot: 'bg-red-500', alert: true },
+                  { time: '14:32:32', text: 'Caregiver alerted', dot: 'bg-red-500', alert: true },
+                ].map((item, idx, arr) => (
+                  <div key={idx} className="flex items-center space-x-3 relative">
+                    <span className="w-14 font-mono text-slate-400 text-[11px] shrink-0">{item.time}</span>
+                    <div className="relative flex items-center justify-center">
+                      <span className={`w-2.5 h-2.5 rounded-full ${item.dot} ring-4 ring-white z-10`} />
+                      {idx !== arr.length - 1 && (
+                        <span className="absolute top-2.5 bottom-[-16px] w-0.5 bg-slate-200" />
+                      )}
+                    </div>
+                    <span className={`font-semibold ${item.alert ? 'text-red-600' : 'text-slate-800'}`}>
+                      {item.text}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
 
+            {/* Location Card */}
             <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-5 space-y-3">
               <h3 className="text-xs font-bold text-slate-900">Location</h3>
 
-              <div className="h-32 bg-[#e2e8f0]/40 border border-slate-200 rounded-lg flex flex-col items-center justify-center relative overflow-hidden bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:16px_16px]">
-                <div className="flex items-center gap-1.5 bg-white shadow-md border border-slate-200 px-3 py-1 rounded-full">
+              <div className="h-40 bg-[#e2e8f0]/40 border border-slate-200 rounded-lg flex flex-col items-center justify-center relative overflow-hidden bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:16px_16px]">
+                {/* SVG Street Pattern overlay */}
+                <svg className="absolute inset-0 w-full h-full opacity-30 pointer-events-none" viewBox="0 0 200 120">
+                  <line x1="0" y1="40" x2="200" y2="40" stroke="#64748b" strokeWidth="6" />
+                  <line x1="0" y1="80" x2="200" y2="80" stroke="#64748b" strokeWidth="4" />
+                  <line x1="70" y1="0" x2="70" y2="120" stroke="#64748b" strokeWidth="5" />
+                  <line x1="140" y1="0" x2="140" y2="120" stroke="#64748b" strokeWidth="3" />
+                </svg>
+
+                <div className="relative z-10 flex items-center gap-1.5 bg-white shadow-md border border-slate-200 px-3 py-1 rounded-full">
                   <MapPin className="w-3.5 h-3.5 text-red-500" />
                   <span className="text-xs font-bold text-slate-800">Thiruvananthapuram</span>
                 </div>
                 <button
                   onClick={() => setActiveTab('location')}
-                  className="absolute bottom-2 right-2 px-3 py-1 bg-[#059669] hover:bg-emerald-600 text-white rounded-lg text-xs font-semibold shadow-xs transition"
+                  className="absolute bottom-2.5 right-2.5 px-3 py-1.5 bg-[#059669] hover:bg-emerald-600 text-white rounded-lg text-xs font-semibold shadow-xs transition z-10 flex items-center gap-1"
                 >
-                  Open in Maps
+                  <span>Open in Maps</span>
+                  <ArrowRight className="w-3 h-3" />
                 </button>
               </div>
             </div>

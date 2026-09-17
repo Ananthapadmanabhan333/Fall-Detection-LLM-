@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronDown, Zap, Play, RotateCcw, AlertTriangle, ShieldCheck, Compass, BarChart3, Layers } from 'lucide-react';
+import { ChevronDown, RotateCcw, AlertTriangle, ShieldCheck, Compass, BarChart3, Layers, Clock, Activity } from 'lucide-react';
 import { api } from '../services/api';
 
 export const MonitoringPage: React.FC = () => {
@@ -148,7 +148,7 @@ export const MonitoringPage: React.FC = () => {
       const getAY = (v: number) => aH / 2 - (v / 25) * (aH / 2 - 10);
       const stepX = aW / 140;
 
-      accelCtx.strokeStyle = '#2563eb';
+      accelCtx.strokeStyle = '#ef4444';
       accelCtx.lineWidth = 1.5;
       accelCtx.beginPath();
       accelHistory.forEach((p, i) => {
@@ -159,7 +159,7 @@ export const MonitoringPage: React.FC = () => {
       });
       accelCtx.stroke();
 
-      accelCtx.strokeStyle = '#f59e0b';
+      accelCtx.strokeStyle = '#3b82f6';
       accelCtx.lineWidth = 1.5;
       accelCtx.beginPath();
       accelHistory.forEach((p, i) => {
@@ -196,9 +196,9 @@ export const MonitoringPage: React.FC = () => {
         gyroCtx.stroke();
       }
 
-      const getGY = (v: number) => gH / 2 - (v / 250) * (gH / 2 - 10);
+      const getGY = (v: number) => gH / 2 - (v / 400) * (gH / 2 - 10);
 
-      gyroCtx.strokeStyle = '#2563eb';
+      gyroCtx.strokeStyle = '#ef4444';
       gyroCtx.lineWidth = 1.5;
       gyroCtx.beginPath();
       gyroHistory.forEach((p, i) => {
@@ -209,7 +209,7 @@ export const MonitoringPage: React.FC = () => {
       });
       gyroCtx.stroke();
 
-      gyroCtx.strokeStyle = '#f59e0b';
+      gyroCtx.strokeStyle = '#3b82f6';
       gyroCtx.lineWidth = 1.5;
       gyroCtx.beginPath();
       gyroHistory.forEach((p, i) => {
@@ -333,10 +333,10 @@ export const MonitoringPage: React.FC = () => {
                 <span className="text-xs font-bold text-slate-800">Accelerometer (m/s²)</span>
                 <div className="flex items-center space-x-3 text-[11px]">
                   <span className="flex items-center gap-1 text-slate-600">
-                    <span className="w-2 h-2 rounded-full bg-blue-600" /> X-axis
+                    <span className="w-2 h-2 rounded-full bg-red-500" /> X-axis
                   </span>
                   <span className="flex items-center gap-1 text-slate-600">
-                    <span className="w-2 h-2 rounded-full bg-amber-500" /> Y-axis
+                    <span className="w-2 h-2 rounded-full bg-blue-500" /> Y-axis
                   </span>
                   <span className="flex items-center gap-1 text-slate-600">
                     <span className="w-2 h-2 rounded-full bg-emerald-500" /> Z-axis
@@ -369,10 +369,10 @@ export const MonitoringPage: React.FC = () => {
                 <span className="text-xs font-bold text-slate-800">Gyroscope (°/s)</span>
                 <div className="flex items-center space-x-3 text-[11px]">
                   <span className="flex items-center gap-1 text-slate-600">
-                    <span className="w-2 h-2 rounded-full bg-blue-600" /> X-axis
+                    <span className="w-2 h-2 rounded-full bg-red-500" /> X-axis
                   </span>
                   <span className="flex items-center gap-1 text-slate-600">
-                    <span className="w-2 h-2 rounded-full bg-amber-500" /> Y-axis
+                    <span className="w-2 h-2 rounded-full bg-blue-500" /> Y-axis
                   </span>
                   <span className="flex items-center gap-1 text-slate-600">
                     <span className="w-2 h-2 rounded-full bg-emerald-500" /> Z-axis
@@ -454,39 +454,39 @@ export const MonitoringPage: React.FC = () => {
                   : 'No abnormal patterns detected'}
               </p>
 
-              {/* 3 Metric Tiles */}
+              {/* 3 Metric Tiles matching Screen 2 */}
               <div className="w-full space-y-3 mt-6 text-left border-t border-slate-100 pt-4">
                 <div className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded bg-blue-50 text-blue-600 flex items-center justify-center">
-                      <Zap className="w-3.5 h-3.5" />
+                  <div className="flex items-center gap-3">
+                    <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                      <Activity className="w-4 h-4" />
                     </div>
                     <div>
-                      <div className="font-bold text-slate-900 font-mono">{rmsG.toFixed(2)} g</div>
+                      <div className="font-bold text-slate-900 font-mono text-sm leading-tight">{rmsG.toFixed(2)} g</div>
                       <div className="text-[10px] text-slate-400">Acceleration (RMS)</div>
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded bg-amber-50 text-amber-600 flex items-center justify-center">
-                      <Play className="w-3.5 h-3.5" />
+                  <div className="flex items-center gap-3">
+                    <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                      <Compass className="w-4 h-4" />
                     </div>
                     <div>
-                      <div className="font-bold text-slate-900 font-mono">{angularVel} °/s</div>
+                      <div className="font-bold text-slate-900 font-mono text-sm leading-tight">{angularVel} °/s</div>
                       <div className="text-[10px] text-slate-400">Angular Velocity</div>
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded bg-purple-50 text-purple-600 flex items-center justify-center">
-                      <ShieldCheck className="w-3.5 h-3.5" />
+                  <div className="flex items-center gap-3">
+                    <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                      <Clock className="w-4 h-4" />
                     </div>
                     <div>
-                      <div className="font-bold text-slate-900 font-mono">{inactivitySec.toFixed(1)} s</div>
+                      <div className="font-bold text-slate-900 font-mono text-sm leading-tight">{inactivitySec.toFixed(1)} s</div>
                       <div className="text-[10px] text-slate-400">Post-Impact Inactivity</div>
                     </div>
                   </div>
