@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Bell, X, AlertTriangle, User, Smartphone, FileText } from 'lucide-react';
+import { Search, Bell, X, AlertTriangle, User, Smartphone, FileText, AlertOctagon } from 'lucide-react';
 import { PageId } from './Sidebar';
 
 interface TopBarProps {
   onNavigate?: (page: PageId) => void;
   onSelectEvent?: (id: string) => void;
+  onTriggerEmergency?: () => void;
 }
 
-export const TopBar: React.FC<TopBarProps> = ({ onNavigate, onSelectEvent }) => {
+export const TopBar: React.FC<TopBarProps> = ({ onNavigate, onSelectEvent, onTriggerEmergency }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -98,14 +99,14 @@ export const TopBar: React.FC<TopBarProps> = ({ onNavigate, onSelectEvent }) => 
                         if (onNavigate) onNavigate(res.page);
                         setIsSearchOpen(false);
                       }}
-                      className="p-2 hover:bg-slate-50 rounded-lg cursor-pointer flex items-center space-x-3 transition"
+                      className="p-2.5 hover:bg-slate-50 rounded-lg cursor-pointer flex items-center space-x-3 transition"
                     >
-                      <div className="w-7 h-7 rounded bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                      <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600 shrink-0">
                         <Icon className="w-3.5 h-3.5" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="text-xs font-bold text-slate-800 truncate">{res.title}</div>
-                        <div className="text-[11px] text-slate-400 truncate">{res.subtitle}</div>
+                        <div className="text-xs font-semibold text-slate-900 truncate">{res.title}</div>
+                        <div className="text-[11px] text-slate-500 truncate">{res.subtitle}</div>
                       </div>
                     </div>
                   );
@@ -117,7 +118,19 @@ export const TopBar: React.FC<TopBarProps> = ({ onNavigate, onSelectEvent }) => 
       </div>
 
       {/* Right Controls */}
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-3 sm:space-x-4">
+        {/* Test Emergency Fall Trigger Button matching Panel 5 popup demo */}
+        {onTriggerEmergency && (
+          <button
+            onClick={onTriggerEmergency}
+            className="flex items-center gap-1.5 px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg text-xs font-semibold shadow-xs transition"
+            title="Simulate Emergency Fall Alert Modal"
+          >
+            <AlertOctagon className="w-3.5 h-3.5 text-red-500 animate-pulse" />
+            <span className="hidden md:inline">Fall Alert Demo</span>
+          </button>
+        )}
+
         {/* Notification Bell with Dropdown */}
         <div ref={notifRef} className="relative">
           <button
@@ -148,8 +161,12 @@ export const TopBar: React.FC<TopBarProps> = ({ onNavigate, onSelectEvent }) => 
                   <div
                     key={notif.id}
                     onClick={() => {
-                      if (onSelectEvent) onSelectEvent(notif.eventId);
-                      if (onNavigate) onNavigate('event-detail');
+                      if (notif.eventId === 'FALL-10293' && onTriggerEmergency) {
+                        onTriggerEmergency();
+                      } else {
+                        if (onSelectEvent) onSelectEvent(notif.eventId);
+                        if (onNavigate) onNavigate('event-detail');
+                      }
                       setIsNotificationsOpen(false);
                     }}
                     className={`p-2.5 rounded-lg cursor-pointer transition flex items-start space-x-2.5 ${
@@ -170,7 +187,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onNavigate, onSelectEvent }) => 
         </div>
 
         {/* Doctor / Admin Profile */}
-        <div className="flex items-center space-x-2.5 pl-2 cursor-pointer">
+        <div className="flex items-center space-x-2.5 pl-1 cursor-pointer">
           <img
             src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=120&auto=format&fit=crop&q=80"
             alt="Dr. Sarah Patel"

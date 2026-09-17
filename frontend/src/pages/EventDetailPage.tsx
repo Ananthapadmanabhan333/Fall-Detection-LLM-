@@ -3,17 +3,9 @@ import {
   ArrowLeft,
   Check,
   Share2,
-  MapPin,
-  ChevronDown,
-  ArrowRight,
-  Brain,
-  ShieldAlert,
-  FileText,
-  Clock,
-  Copy,
-  X,
-  Save,
-  Trash2
+  MoreHorizontal,
+  Play,
+  Pause
 } from 'lucide-react';
 
 interface EventDetailPageProps {
@@ -21,37 +13,31 @@ interface EventDetailPageProps {
   onBack: () => void;
 }
 
-export const EventDetailPage: React.FC<EventDetailPageProps> = ({ eventId = 'FALL-10293', onBack }) => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'sensor' | 'ai' | 'timeline' | 'location' | 'notes'>('overview');
+export const EventDetailPage: React.FC<EventDetailPageProps> = ({
+  eventId = 'FALL-10293',
+  onBack
+}) => {
   const [status, setStatus] = useState<'Under Review' | 'Resolved'>('Under Review');
-  const [showShareModal, setShowShareModal] = useState(false);
-  const [copiedLink, setCopiedLink] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [selectedCamera, setSelectedCamera] = useState(0);
+  const [actionFeedback, setActionFeedback] = useState<string | null>(null);
 
-  // Clinical Notes State
-  const [clinicalNotes, setClinicalNotes] = useState('Patient contacted via bedside speaker. Caregiver confirmed dispatch. Patient stable and resting.');
-  const [notesSaved, setNotesSaved] = useState(false);
+  const cameras = [
+    { name: 'Cam 1 (Main)', img: 'https://images.unsplash.com/photo-1586105251261-72a756497a11?w=400&auto=format&fit=crop&q=80' },
+    { name: 'Cam 2 (Hallway)', img: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&auto=format&fit=crop&q=80' },
+    { name: 'Bedside IR', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400&auto=format&fit=crop&q=80' }
+  ];
 
-  const handleResolve = () => {
-    setStatus('Resolved');
-  };
-
-  const handleSaveNotes = (e: React.FormEvent) => {
-    e.preventDefault();
-    setNotesSaved(true);
-    setTimeout(() => setNotesSaved(false), 2000);
-  };
-
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.href);
-    setCopiedLink(true);
-    setTimeout(() => setCopiedLink(false), 2000);
+  const handleAction = (msg: string) => {
+    setActionFeedback(msg);
+    setTimeout(() => setActionFeedback(null), 3000);
   };
 
   return (
-    <div className="space-y-5">
-      {/* Top Header matching Screen 3 */}
-      <div>
-        <div className="flex items-center justify-between mb-1.5">
+    <div className="space-y-4">
+      {/* Top Breadcrumb & Actions Bar matching Screen 3 */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="space-y-1">
           <button
             onClick={onBack}
             className="text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1 transition"
@@ -59,483 +45,223 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({ eventId = 'FAL
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Back to Events</span>
           </button>
-          <span className="text-xs text-slate-400 font-medium">Sep 17, 2025 14:32</span>
-        </div>
-
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          
           <div className="flex items-center space-x-3">
-            <h1 className="text-xl font-bold text-slate-900 tracking-tight">Fall Event #{eventId}</h1>
-            <span className={`px-2.5 py-0.5 rounded text-xs font-semibold ${
-              status === 'Resolved'
-                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                : 'bg-amber-50 text-amber-800 border border-amber-200'
-            }`}>
+            <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+              Fall Event #{eventId}
+            </h1>
+            <span
+              className={`px-2.5 py-0.5 rounded text-xs font-semibold ${
+                status === 'Resolved'
+                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                  : 'bg-amber-50 text-amber-800 border border-amber-200'
+              }`}
+            >
               {status}
             </span>
           </div>
-
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={handleResolve}
-              className="px-3.5 py-1.5 bg-[#059669] hover:bg-emerald-600 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-xs transition"
-            >
-              <Check className="w-3.5 h-3.5" />
-              <span>{status === 'Resolved' ? 'Resolved' : 'Mark as Resolved'}</span>
-            </button>
-            <button
-              onClick={() => setShowShareModal(true)}
-              className="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-lg text-xs font-medium flex items-center gap-1.5 shadow-xs transition"
-            >
-              <Share2 className="w-3.5 h-3.5 text-slate-500" />
-              <span>Share</span>
-            </button>
-          </div>
         </div>
-      </div>
 
-      {/* Sub-Navigation Tabs matching Screen 3 */}
-      <div className="flex items-center space-x-6 border-b border-slate-200 text-xs">
-        {[
-          { id: 'overview', label: 'Overview' },
-          { id: 'sensor', label: 'Sensor Data' },
-          { id: 'ai', label: 'AI Analysis' },
-          { id: 'timeline', label: 'Timeline' },
-          { id: 'location', label: 'Location' },
-          { id: 'notes', label: 'Notes' },
-        ].map((tab) => (
+        <div className="flex items-center space-x-2 self-start sm:self-auto">
           <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id as any)}
-            className={`pb-2 font-semibold transition border-b-2 ${
-              activeTab === tab.id
-                ? 'border-[#0e1d34] text-[#0e1d34]'
-                : 'border-transparent text-slate-400 hover:text-slate-700'
-            }`}
+            onClick={() => setStatus('Resolved')}
+            className="px-3.5 py-1.5 bg-[#047857] hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-xs flex items-center gap-1.5 transition"
           >
-            {tab.label}
+            <Check className="w-3.5 h-3.5" />
+            <span>Mark as Resolved</span>
           </button>
-        ))}
+
+          <button
+            onClick={() => handleAction('Link copied to clipboard!')}
+            className="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-lg text-xs font-medium shadow-xs flex items-center gap-1.5 transition"
+          >
+            <Share2 className="w-3.5 h-3.5 text-slate-400" />
+            <span>Share</span>
+          </button>
+
+          <button
+            className="p-1.5 bg-white hover:bg-slate-50 text-slate-500 border border-slate-200 rounded-lg shadow-xs transition"
+            title="More Options"
+          >
+            <MoreHorizontal className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
-      {/* Tab 1: Overview matching Screen 3 Column Structure */}
-      {activeTab === 'overview' && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-          {/* Left Column: Event Information + Sensor Data Preview */}
-          <div className="space-y-6">
-            {/* Event Information Card */}
-            <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-5 space-y-3">
-              <h2 className="text-xs font-bold text-slate-900">Event Information</h2>
-
-              <div className="divide-y divide-slate-100 text-xs">
-                <div className="py-2 flex justify-between">
-                  <span className="text-slate-400">User</span>
-                  <span className="font-semibold text-slate-800">John Doe (USR001)</span>
-                </div>
-
-                <div className="py-2 flex justify-between">
-                  <span className="text-slate-400">Device</span>
-                  <span className="font-mono text-slate-700">DEV001</span>
-                </div>
-
-                <div className="py-2 flex justify-between">
-                  <span className="text-slate-400">Date & Time</span>
-                  <span className="font-mono text-slate-700">Sep 12, 2025 14:32:15</span>
-                </div>
-
-                <div className="py-2 flex justify-between items-center">
-                  <span className="text-slate-400">Fall Probability</span>
-                  <span className="px-2 py-0.5 rounded font-bold text-xs bg-red-50 text-red-600 border border-red-200">
-                    94%
-                  </span>
-                </div>
-
-                <div className="py-2 flex justify-between">
-                  <span className="text-slate-400">Impact Detected</span>
-                  <span className="font-semibold text-slate-800">Yes</span>
-                </div>
-
-                <div className="py-2 flex justify-between">
-                  <span className="text-slate-400">Post-Impact Movement</span>
-                  <span className="font-semibold text-slate-800">Low (0.08)</span>
-                </div>
-
-                <div className="py-2 flex justify-between">
-                  <span className="text-slate-400">Duration</span>
-                  <span className="text-slate-700">18 seconds</span>
-                </div>
-
-                <div className="py-2 flex justify-between items-center">
-                  <span className="text-slate-400">Location</span>
-                  <div className="text-right">
-                    <div className="text-slate-800 font-medium">Near Main Street, Thiruvananthapuram</div>
-                    <button
-                      onClick={() => setActiveTab('location')}
-                      className="text-[11px] text-emerald-600 font-semibold hover:underline flex items-center gap-0.5 justify-end mt-0.5"
-                    >
-                      <span>View on Map</span>
-                      <ArrowRight className="w-3 h-3" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Sensor Data Preview Card */}
-            <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-5 space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xs font-bold text-slate-900">Sensor Data Preview</h3>
-                <div className="flex items-center gap-1 text-[11px] text-slate-500 bg-slate-50 border border-slate-200 rounded px-2 py-0.5">
-                  <span>Accelerometer</span>
-                  <ChevronDown className="w-3 h-3 text-slate-400" />
-                </div>
-              </div>
-
-              <div className="h-36 bg-slate-50/50 border border-slate-100 rounded-lg flex items-center justify-center relative overflow-hidden p-2">
-                <svg className="w-full h-full" viewBox="0 0 400 120" preserveAspectRatio="none">
-                  {/* Gridlines */}
-                  <line x1="0" y1="20" x2="400" y2="20" stroke="#f1f5f9" strokeWidth="1" />
-                  <line x1="0" y1="60" x2="400" y2="60" stroke="#e2e8f0" strokeWidth="1" strokeDasharray="3 3" />
-                  <line x1="0" y1="100" x2="400" y2="100" stroke="#f1f5f9" strokeWidth="1" />
-
-                  {/* Waveforms */}
-                  {/* X-axis Red line with fall shock peak */}
-                  <path
-                    d="M 0 60 Q 50 58, 100 60 T 170 60 L 185 105 L 195 15 L 205 90 L 215 50 L 230 60 L 400 60"
-                    fill="none"
-                    stroke="#ef4444"
-                    strokeWidth="1.5"
-                  />
-                  {/* Y-axis Blue line */}
-                  <path
-                    d="M 0 65 Q 50 62, 100 64 T 170 64 L 185 92 L 195 28 L 205 78 L 215 58 L 230 65 L 400 65"
-                    fill="none"
-                    stroke="#3b82f6"
-                    strokeWidth="1.5"
-                  />
-                  {/* Z-axis Green line */}
-                  <path
-                    d="M 0 55 Q 50 52, 100 54 T 170 54 L 185 85 L 195 35 L 205 72 L 215 52 L 230 55 L 400 55"
-                    fill="none"
-                    stroke="#10b981"
-                    strokeWidth="1.5"
-                  />
-                </svg>
-                <div className="absolute left-2 top-2 text-[9px] font-mono text-slate-400">
-                  <div>20</div>
-                  <div className="mt-2">0</div>
-                  <div className="mt-2">-20</div>
-                </div>
-                <div className="absolute right-2 top-2 text-[10px] font-mono bg-white px-2 py-0.5 rounded border border-slate-200 text-red-600 font-bold shadow-xs">
-                  Peak: 3.8g (14:32:16)
-                </div>
-              </div>
-              <div className="flex justify-between text-[10px] text-slate-400 font-mono px-1">
-                <span>0s</span>
-                <span>5s</span>
-                <span>10s</span>
-                <span>15s</span>
-                <span>20s</span>
-                <span>25s</span>
-                <span>30s</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column: Event Timeline + Location */}
-          <div className="space-y-6">
-            {/* Event Timeline Card */}
-            <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-5 space-y-3">
-              <h2 className="text-xs font-bold text-slate-900">Event Timeline</h2>
-
-              <div className="relative pl-1 space-y-3.5 text-xs">
-                {[
-                  { time: '14:32:15', text: 'Sudden acceleration detected', dot: 'bg-emerald-500' },
-                  { time: '14:32:16', text: 'Impact detected', dot: 'bg-emerald-500' },
-                  { time: '14:32:16', text: 'Low movement after impact', dot: 'bg-emerald-500' },
-                  { time: '14:32:17', text: 'AI agent activated', dot: 'bg-blue-600' },
-                  { time: '14:32:19', text: 'User confirmation requested', dot: 'bg-blue-600' },
-                  { time: '14:32:31', text: 'No response (15s timeout)', dot: 'bg-red-500', alert: true },
-                  { time: '14:32:32', text: 'Caregiver alerted', dot: 'bg-red-500', alert: true },
-                ].map((item, idx, arr) => (
-                  <div key={idx} className="flex items-center space-x-3 relative">
-                    <span className="w-14 font-mono text-slate-400 text-[11px] shrink-0">{item.time}</span>
-                    <div className="relative flex items-center justify-center">
-                      <span className={`w-2.5 h-2.5 rounded-full ${item.dot} ring-4 ring-white z-10`} />
-                      {idx !== arr.length - 1 && (
-                        <span className="absolute top-2.5 bottom-[-16px] w-0.5 bg-slate-200" />
-                      )}
-                    </div>
-                    <span className={`font-semibold ${item.alert ? 'text-red-600' : 'text-slate-800'}`}>
-                      {item.text}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Location Card */}
-            <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-5 space-y-3">
-              <h3 className="text-xs font-bold text-slate-900">Location</h3>
-
-              <div className="h-40 bg-[#e2e8f0]/40 border border-slate-200 rounded-lg flex flex-col items-center justify-center relative overflow-hidden bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:16px_16px]">
-                {/* SVG Street Pattern overlay */}
-                <svg className="absolute inset-0 w-full h-full opacity-30 pointer-events-none" viewBox="0 0 200 120">
-                  <line x1="0" y1="40" x2="200" y2="40" stroke="#64748b" strokeWidth="6" />
-                  <line x1="0" y1="80" x2="200" y2="80" stroke="#64748b" strokeWidth="4" />
-                  <line x1="70" y1="0" x2="70" y2="120" stroke="#64748b" strokeWidth="5" />
-                  <line x1="140" y1="0" x2="140" y2="120" stroke="#64748b" strokeWidth="3" />
-                </svg>
-
-                <div className="relative z-10 flex items-center gap-1.5 bg-white shadow-md border border-slate-200 px-3 py-1 rounded-full">
-                  <MapPin className="w-3.5 h-3.5 text-red-500" />
-                  <span className="text-xs font-bold text-slate-800">Thiruvananthapuram</span>
-                </div>
-                <button
-                  onClick={() => setActiveTab('location')}
-                  className="absolute bottom-2.5 right-2.5 px-3 py-1.5 bg-[#059669] hover:bg-emerald-600 text-white rounded-lg text-xs font-semibold shadow-xs transition z-10 flex items-center gap-1"
-                >
-                  <span>Open in Maps</span>
-                  <ArrowRight className="w-3 h-3" />
-                </button>
-              </div>
-            </div>
-          </div>
+      {actionFeedback && (
+        <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-2 rounded-lg text-xs font-medium animate-in fade-in">
+          {actionFeedback}
         </div>
       )}
 
-      {/* Tab 2: Sensor Data */}
-      {activeTab === 'sensor' && (
-        <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-6 space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-            <div>
-              <h2 className="text-xs font-bold text-slate-900">Full 5-Second High-Resolution IMU Waveform</h2>
-              <p className="text-[11px] text-slate-400">Recorded at 100 Hz (500 samples) during incident window</p>
-            </div>
-            <span className="font-mono text-xs bg-red-50 text-red-600 border border-red-200 px-2.5 py-1 rounded font-bold">
-              Impact Peak: 3.82 g
-            </span>
-          </div>
-
-          <div className="h-56 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center relative p-4">
-            <svg className="w-full h-full" viewBox="0 0 800 200" preserveAspectRatio="none">
-              {/* Baseline 1.0g reference */}
-              <line x1="0" y1="100" x2="800" y2="100" stroke="#cbd5e1" strokeDasharray="4 4" strokeWidth="1" />
-              {/* 2.8g Impact threshold */}
-              <line x1="0" y1="40" x2="800" y2="40" stroke="#ef4444" strokeDasharray="6 3" strokeWidth="1.5" />
-              <text x="700" y="34" fill="#ef4444" fontSize="11" fontFamily="monospace">2.8g Impact Threshold</text>
-              {/* Impact wave */}
-              <path
-                d="M 0 100 Q 150 98, 300 100 L 330 180 L 345 20 L 360 160 L 380 95 L 420 100 L 800 100"
-                fill="none"
-                stroke="#2563eb"
-                strokeWidth="2.5"
-              />
-            </svg>
-            <div className="absolute bottom-2 left-4 text-[10px] text-slate-500 font-mono">
-              Window: -2.5s pre-fall to +2.5s post-impact
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Tab 3: AI Analysis */}
-      {activeTab === 'ai' && (
-        <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-6 space-y-5">
-          <div className="flex items-center space-x-2 text-xs font-bold text-slate-900 border-b border-slate-100 pb-3">
-            <Brain className="w-4 h-4 text-blue-600" />
-            <h2>LangGraph Multi-Tier Agentic Reasoning Breakdown</h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-              <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                <ShieldAlert className="w-4 h-4 text-red-500" />
-                <span>Deterministic Safety Engine Rule</span>
-              </div>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Triggered rule: <code className="bg-slate-200 px-1 py-0.5 rounded font-mono text-[11px]">RULE_HIGH_IMPACT_IMMOBILITY</code>.
-                Peak acceleration exceeded 2.8g threshold followed by &gt;3.0s of post-impact motion &lt;0.08g.
-                Automated escalation locked by SafetyPolicyGuard.
-              </p>
-            </div>
-
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-              <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                <FileText className="w-4 h-4 text-emerald-600" />
-                <span>ChromaDB RAG Protocol Cited</span>
-              </div>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Referenced: <strong className="text-slate-800">Emergency Fall Protocol v2</strong> (Section 4.1: Unresponsive Patient Dispatch).
-                Mandates immediate secondary contact alert if no user confirmation within 15 seconds.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Tab 4: Timeline */}
-      {activeTab === 'timeline' && (
-        <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-6 space-y-4">
-          <h2 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-            <Clock className="w-4 h-4 text-blue-600" />
-            <span>Forensic Second-by-Second Telemetry Audit</span>
-          </h2>
-
-          <div className="space-y-3 divide-y divide-slate-100 text-xs">
-            <div className="pt-2 flex justify-between">
-              <div><strong className="text-slate-800">14:32:15.102</strong> - Sudden acceleration vector change</div>
-              <span className="font-mono text-slate-400">DEV001 IMU</span>
-            </div>
-            <div className="pt-2 flex justify-between">
-              <div><strong className="text-slate-800">14:32:16.024</strong> - Peak ground impact spike of 3.82g recorded</div>
-              <span className="font-mono text-red-500 font-bold">Peak Detected</span>
-            </div>
-            <div className="pt-2 flex justify-between">
-              <div><strong className="text-slate-800">14:32:17.310</strong> - PyTorch classifier output probability: 0.9412</div>
-              <span className="font-mono text-slate-400">ML Backend</span>
-            </div>
-            <div className="pt-2 flex justify-between">
-              <div><strong className="text-slate-800">14:32:19.000</strong> - Auditory buzzer and wrist vibration dispatched</div>
-              <span className="font-mono text-blue-600 font-semibold">User Prompt</span>
-            </div>
-            <div className="pt-2 flex justify-between">
-              <div><strong className="text-slate-800">14:32:31.000</strong> - 15s confirmation window elapsed with zero response</div>
-              <span className="font-mono text-red-500 font-semibold">Timeout Expired</span>
-            </div>
-            <div className="pt-2 flex justify-between">
-              <div><strong className="text-slate-800">14:32:32.140</strong> - SMS alert transmitted to caregiver Sarah Jenkins</div>
-              <span className="font-mono text-emerald-600 font-semibold">Caregiver Alerted</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Tab 5: Location */}
-      {activeTab === 'location' && (
-        <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-6 space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-            <div>
-              <h2 className="text-xs font-bold text-slate-900">Incident GPS Location Telemetry</h2>
-              <p className="text-[11px] text-slate-400">Near Main Street, Thiruvananthapuram, Kerala, India</p>
-            </div>
-            <button className="px-3 py-1.5 bg-[#059669] text-white rounded-lg text-xs font-semibold shadow-xs">
-              Open in Google Maps
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
-            <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
-              <span className="text-slate-400 block text-[10px]">Latitude</span>
-              <span className="text-slate-900 font-bold">8.5241° N</span>
-            </div>
-            <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
-              <span className="text-slate-400 block text-[10px]">Longitude</span>
-              <span className="text-slate-900 font-bold">76.9366° E</span>
-            </div>
-            <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
-              <span className="text-slate-400 block text-[10px]">Nearest Emergency Center</span>
-              <span className="text-slate-900 font-bold">Med. College Hospital (2.4 km)</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Tab 6: Clinical Notes */}
-      {activeTab === 'notes' && (
-        <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-6 space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-            <div>
-              <h2 className="text-xs font-bold text-slate-900">Clinical Case Notes</h2>
-              <p className="text-[11px] text-slate-400">Logged by Dr. Sarah Patel (Administrator)</p>
-            </div>
-            {notesSaved && (
-              <span className="text-emerald-600 text-xs font-semibold flex items-center gap-1">
-                <Check className="w-3.5 h-3.5" /> Notes saved to medical audit record
-              </span>
-            )}
-          </div>
-
-          <form onSubmit={handleSaveNotes} className="space-y-3">
-            <textarea
-              rows={4}
-              value={clinicalNotes}
-              onChange={(e) => setClinicalNotes(e.target.value)}
-              placeholder="Enter clinical assessment, patient follow-up, or medical triage notes..."
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:border-blue-500 font-sans leading-relaxed"
+      {/* 3-Column Layout matching Screen 3 in reference image */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        
+        {/* Column 1: Video Feed Preview & Camera Angle Strip (5 Cols) */}
+        <div className="lg:col-span-5 bg-white rounded-xl border border-slate-200 p-3.5 shadow-xs space-y-3">
+          {/* Main Camera Video Player */}
+          <div className="relative rounded-lg overflow-hidden bg-slate-950 aspect-video flex items-center justify-center group shadow-inner">
+            <img
+              src={cameras[selectedCamera].img}
+              alt="Fall Scene Snapshot"
+              className="w-full h-full object-cover opacity-80"
             />
 
-            <div className="flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => setClinicalNotes('')}
-                className="px-3 py-1.5 text-slate-500 hover:text-red-600 text-xs font-medium flex items-center gap-1 transition"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-                <span>Clear</span>
-              </button>
+            {/* Centered Play Button Overlay */}
+            <button
+              onClick={() => setIsPlaying(!isPlaying)}
+              className="absolute w-12 h-12 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-xs text-white flex items-center justify-center transition transform group-hover:scale-110 shadow-lg border border-white/20"
+            >
+              {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 ml-0.5" />}
+            </button>
 
-              <button
-                type="submit"
-                className="px-4 py-1.5 bg-[#059669] hover:bg-emerald-600 text-white rounded-lg text-xs font-semibold shadow-xs flex items-center gap-1.5 transition"
-              >
-                <Save className="w-3.5 h-3.5" />
-                <span>Save Notes</span>
-              </button>
+            {/* Bottom Overlay Info */}
+            <div className="absolute left-3 bottom-2 text-[10px] text-white/90 font-mono bg-black/60 px-2 py-0.5 rounded backdrop-blur-xs">
+              Sep 17, 2025 14:32:15
             </div>
-          </form>
+            <div className="absolute right-3 bottom-2 text-[10px] text-white/90 font-mono bg-black/60 px-2 py-0.5 rounded backdrop-blur-xs">
+              00:52 / 09:20
+            </div>
+          </div>
+
+          {/* Camera Angle Thumbnail Strip */}
+          <div className="grid grid-cols-3 gap-2">
+            {cameras.map((cam, idx) => (
+              <button
+                key={idx}
+                onClick={() => setSelectedCamera(idx)}
+                className={`relative rounded-md overflow-hidden aspect-video border-2 transition ${
+                  selectedCamera === idx ? 'border-emerald-500 shadow-xs' : 'border-slate-200 opacity-70 hover:opacity-100'
+                }`}
+              >
+                <img src={cam.img} alt={cam.name} className="w-full h-full object-cover" />
+                <span className="absolute bottom-0 inset-x-0 bg-black/60 text-[9px] text-white text-center py-0.5 truncate">
+                  {cam.name}
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
-      )}
 
-      {/* Share Incident Modal */}
-      {showShareModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="bg-white rounded-2xl border border-slate-200 w-full max-w-md p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div className="flex items-center space-x-2">
-                <Share2 className="w-4 h-4 text-blue-600" />
-                <h3 className="text-sm font-bold text-slate-900">Share Incident Report #{eventId}</h3>
-              </div>
-              <button onClick={() => setShowShareModal(false)} className="text-slate-400 hover:text-slate-700">
-                <X className="w-4 h-4" />
-              </button>
+        {/* Column 2: Event Information (4 Cols) */}
+        <div className="lg:col-span-4 bg-white rounded-xl border border-slate-200 p-4 shadow-xs">
+          <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-3">
+            Event Information
+          </h2>
+
+          <div className="divide-y divide-slate-100 text-xs">
+            <div className="py-2 flex justify-between items-center">
+              <span className="text-slate-500">User</span>
+              <span className="font-semibold text-slate-800">John Doe (USR001)</span>
             </div>
 
-            <div className="space-y-3 text-xs">
-              <p className="text-slate-600">
-                Share this authenticated case record with consulting physicians, EMS responders, or authorized family caregivers.
-              </p>
-
-              <div>
-                <label className="block text-slate-500 font-medium mb-1">Encrypted Share Link</label>
-                <div className="flex items-center gap-1.5">
-                  <input
-                    type="text"
-                    readOnly
-                    value={`https://fallguard.ai/events/${eventId}`}
-                    className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-700 font-mono"
-                  />
-                  <button
-                    onClick={handleCopyLink}
-                    className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-semibold flex items-center gap-1 shadow-xs"
-                  >
-                    {copiedLink ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copiedLink ? 'Copied' : 'Copy'}</span>
-                  </button>
-                </div>
-              </div>
+            <div className="py-2 flex justify-between items-center">
+              <span className="text-slate-500">Device</span>
+              <span className="font-mono text-slate-800">DEV001</span>
             </div>
 
-            <div className="pt-2 flex justify-end">
-              <button
-                onClick={() => setShowShareModal(false)}
-                className="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium text-xs"
-              >
-                Close
-              </button>
+            <div className="py-2 flex justify-between items-center">
+              <span className="text-slate-500">Location</span>
+              <span className="font-medium text-slate-800">Room 101, Main Wing</span>
+            </div>
+
+            <div className="py-2 flex justify-between items-center">
+              <span className="text-slate-500">Date & Time</span>
+              <span className="font-mono text-slate-700 text-[11px]">Sep 17, 2025 14:32:15</span>
+            </div>
+
+            <div className="py-2 flex justify-between items-center">
+              <span className="text-slate-500">Fall Probability</span>
+              <span className="font-bold text-red-600 text-sm">94%</span>
+            </div>
+
+            <div className="py-2 flex justify-between items-center">
+              <span className="text-slate-500">Impact Detected</span>
+              <span className="font-semibold text-slate-800">Yes</span>
+            </div>
+
+            <div className="py-2 flex justify-between items-center">
+              <span className="text-slate-500">Post-Impact Movement</span>
+              <span className="text-slate-700">Low (0.08)</span>
+            </div>
+
+            <div className="py-2 flex justify-between items-center">
+              <span className="text-slate-500">Duration</span>
+              <span className="text-slate-700">18 seconds</span>
+            </div>
+
+            <div className="py-2 flex justify-between items-center">
+              <span className="text-slate-500">Caregiver Alert</span>
+              <span className="text-slate-500 font-medium">Not sent</span>
+            </div>
+
+            <div className="py-2 flex justify-between items-center">
+              <span className="text-slate-500">Status</span>
+              <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                {status}
+              </span>
             </div>
           </div>
         </div>
-      )}
+
+        {/* Column 3: AI Analysis & Urgent Actions (3 Cols) */}
+        <div className="lg:col-span-3 space-y-4">
+          {/* AI Analysis Card */}
+          <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs space-y-2.5">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-800">AI Analysis</span>
+              <span className="flex items-center gap-1 text-[11px] font-bold text-red-600">
+                <span>▲</span>
+                <span>High Confidence</span>
+              </span>
+            </div>
+
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Sudden fall detected with high impact followed by low movement. User did not respond within 15s.
+            </p>
+
+            <button
+              onClick={() => handleAction('Loading multi-modal agent reasoning trace...')}
+              className="w-full py-1.5 px-3 border border-slate-200 hover:border-slate-300 rounded-lg text-xs font-semibold text-blue-600 hover:text-blue-700 text-center transition"
+            >
+              View AI Reasoning
+            </button>
+          </div>
+
+          {/* Actions Card */}
+          <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs space-y-2.5">
+            <div className="text-xs font-bold text-slate-800 mb-2">Actions</div>
+
+            {/* I'm OK (False Alarm) */}
+            <button
+              onClick={() => {
+                setStatus('Resolved');
+                handleAction('Event marked as False Alarm (User verified safe).');
+              }}
+              className="w-full py-2 px-3 bg-[#047857] hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold text-center shadow-xs transition"
+            >
+              I'm OK (False Alarm)
+            </button>
+
+            {/* Send Help */}
+            <button
+              onClick={() => handleAction('🚨 Emergency medical response dispatched to Room 101!')}
+              className="w-full py-2 px-3 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-semibold text-center shadow-xs transition"
+            >
+              Send Help
+            </button>
+
+            {/* Call Caregiver */}
+            <button
+              onClick={() => handleAction('Dialing primary emergency contact (Elena Doe: +1-555-0192)...')}
+              className="w-full py-2 px-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-lg text-xs font-medium text-center shadow-xs transition"
+            >
+              Call Caregiver
+            </button>
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 };
