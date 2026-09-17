@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Sidebar, PageId } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
 import { EmergencyFallModal } from './components/EmergencyFallModal';
-import { NineScreensShowcase } from './components/NineScreensShowcase';
 import { DashboardPage } from './pages/DashboardPage';
 import { MonitoringPage } from './pages/MonitoringPage';
 import { EventsPage } from './pages/EventsPage';
@@ -15,7 +14,6 @@ import { AnalyticsPage } from './pages/AnalyticsPage';
 import { SettingsPage } from './pages/SettingsPage';
 
 export const App: React.FC = () => {
-  const [viewMode, setViewMode] = useState<'showcase' | 'single'>('showcase');
   const [currentPage, setCurrentPage] = useState<PageId>('dashboard');
   const [selectedEventId, setSelectedEventId] = useState<string>('FALL-10293');
   const [eventsViewMode, setEventsViewMode] = useState<'detail' | 'list'>('detail');
@@ -25,7 +23,6 @@ export const App: React.FC = () => {
     setSelectedEventId(id);
     setEventsViewMode('detail');
     setCurrentPage('events');
-    setViewMode('single');
   };
 
   const handleNavigate = (page: PageId) => {
@@ -33,89 +30,67 @@ export const App: React.FC = () => {
       setEventsViewMode('detail');
     }
     setCurrentPage(page);
-    setViewMode('single');
-  };
-
-  const handleSelectScreenFromShowcase = (page: PageId) => {
-    if (page === 'events') {
-      setEventsViewMode('detail');
-    }
-    setCurrentPage(page);
-    setViewMode('single');
   };
 
   return (
-    <div className="min-h-screen font-sans antialiased selection:bg-emerald-600 selection:text-white">
-      {/* If Showcase Mode: Render Exact 9-Screen Layout matching media_1789648379971.png */}
-      {viewMode === 'showcase' ? (
-        <NineScreensShowcase
-          onSelectScreen={handleSelectScreenFromShowcase}
-          onOpenSingleApp={() => setViewMode('single')}
-          onTriggerEmergencyModal={() => setIsEmergencyModalOpen(true)}
+    <div className="flex min-h-screen bg-slate-50 text-slate-900 font-sans antialiased selection:bg-emerald-600 selection:text-white">
+      {/* Dark Sidebar matching Reference Design */}
+      <Sidebar
+        currentPage={currentPage}
+        onNavigate={handleNavigate}
+      />
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-w-0">
+        <TopBar
+          onNavigate={handleNavigate}
+          onSelectEvent={handleSelectEvent}
+          onTriggerEmergency={() => setIsEmergencyModalOpen(true)}
         />
-      ) : (
-        /* Full Single-Screen Interactive Web Application */
-        <div className="flex min-h-screen bg-slate-50 text-slate-900">
-          {/* Dark Sidebar matching Reference Design */}
-          <Sidebar
-            currentPage={currentPage}
-            onNavigate={handleNavigate}
-          />
 
-          {/* Main Content Area */}
-          <div className="flex-1 flex flex-col min-w-0">
-            <TopBar
+        <main className="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto overflow-y-auto">
+          {currentPage === 'dashboard' && (
+            <DashboardPage
               onNavigate={handleNavigate}
-              onSelectEvent={handleSelectEvent}
-              onTriggerEmergency={() => setIsEmergencyModalOpen(true)}
-              onShowOverview={() => setViewMode('showcase')}
+              onSelectEvent={(id) => {
+                if (id === 'FALL-10293') {
+                  setIsEmergencyModalOpen(true);
+                } else {
+                  handleSelectEvent(id);
+                }
+              }}
             />
+          )}
 
-            <main className="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto overflow-y-auto">
-              {currentPage === 'dashboard' && (
-                <DashboardPage
-                  onNavigate={handleNavigate}
-                  onSelectEvent={(id) => {
-                    if (id === 'FALL-10293') {
-                      setIsEmergencyModalOpen(true);
-                    } else {
-                      handleSelectEvent(id);
-                    }
-                  }}
-                />
-              )}
+          {currentPage === 'monitoring' && <MonitoringPage />}
 
-              {currentPage === 'monitoring' && <MonitoringPage />}
+          {(currentPage === 'events' || currentPage === 'event-detail') && (
+            eventsViewMode === 'detail' ? (
+              <EventDetailPage
+                eventId={selectedEventId}
+                onBack={() => setEventsViewMode('list')}
+              />
+            ) : (
+              <EventsPage
+                onNavigate={handleNavigate}
+                onSelectEvent={handleSelectEvent}
+              />
+            )
+          )}
 
-              {(currentPage === 'events' || currentPage === 'event-detail') && (
-                eventsViewMode === 'detail' ? (
-                  <EventDetailPage
-                    eventId={selectedEventId}
-                    onBack={() => setEventsViewMode('list')}
-                  />
-                ) : (
-                  <EventsPage
-                    onNavigate={handleNavigate}
-                    onSelectEvent={handleSelectEvent}
-                  />
-                )
-              )}
+          {currentPage === 'devices' && <DevicesPage />}
 
-              {currentPage === 'devices' && <DevicesPage />}
+          {currentPage === 'users' && <UsersPage />}
 
-              {currentPage === 'users' && <UsersPage />}
+          {currentPage === 'agent' && <AgentConsolePage />}
 
-              {currentPage === 'agent' && <AgentConsolePage />}
+          {currentPage === 'knowledge' && <KnowledgeBasePage />}
 
-              {currentPage === 'knowledge' && <KnowledgeBasePage />}
+          {currentPage === 'analytics' && <AnalyticsPage />}
 
-              {currentPage === 'analytics' && <AnalyticsPage />}
-
-              {currentPage === 'settings' && <SettingsPage />}
-            </main>
-          </div>
-        </div>
-      )}
+          {currentPage === 'settings' && <SettingsPage />}
+        </main>
+      </div>
 
       {/* Emergency Fall Detected Modal matching Screen 5 */}
       <EmergencyFallModal
