@@ -1,14 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Bell, X, AlertTriangle, User, Smartphone, FileText, AlertOctagon } from 'lucide-react';
+import { Search, Bell, X, AlertTriangle, User, Smartphone, FileText, AlertOctagon, LayoutGrid } from 'lucide-react';
 import { PageId } from './Sidebar';
 
 interface TopBarProps {
   onNavigate?: (page: PageId) => void;
   onSelectEvent?: (id: string) => void;
   onTriggerEmergency?: () => void;
+  onShowOverview?: () => void;
 }
 
-export const TopBar: React.FC<TopBarProps> = ({ onNavigate, onSelectEvent, onTriggerEmergency }) => {
+export const TopBar: React.FC<TopBarProps> = ({ onNavigate, onSelectEvent, onTriggerEmergency, onShowOverview }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -119,6 +120,18 @@ export const TopBar: React.FC<TopBarProps> = ({ onNavigate, onSelectEvent, onTri
 
       {/* Right Controls */}
       <div className="flex items-center space-x-3 sm:space-x-4">
+        {/* Switch back to 9-Screens Overview button */}
+        {onShowOverview && (
+          <button
+            onClick={onShowOverview}
+            className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-lg text-xs font-semibold shadow-xs transition"
+            title="View 9-Screen Overview as in reference image"
+          >
+            <LayoutGrid className="w-3.5 h-3.5 text-slate-500" />
+            <span className="hidden md:inline">9-Screen Overview</span>
+          </button>
+        )}
+
         {/* Test Emergency Fall Trigger Button matching Panel 5 popup demo */}
         {onTriggerEmergency && (
           <button

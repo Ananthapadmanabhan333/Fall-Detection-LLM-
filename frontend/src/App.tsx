@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Sidebar, PageId } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
 import { EmergencyFallModal } from './components/EmergencyFallModal';
+import { NineScreensShowcase } from './components/NineScreensShowcase';
 import { DashboardPage } from './pages/DashboardPage';
 import { MonitoringPage } from './pages/MonitoringPage';
 import { EventsPage } from './pages/EventsPage';
@@ -14,6 +15,7 @@ import { AnalyticsPage } from './pages/AnalyticsPage';
 import { SettingsPage } from './pages/SettingsPage';
 
 export const App: React.FC = () => {
+  const [viewMode, setViewMode] = useState<'showcase' | 'single'>('showcase');
   const [currentPage, setCurrentPage] = useState<PageId>('dashboard');
   const [selectedEventId, setSelectedEventId] = useState<string>('FALL-10293');
   const [eventsViewMode, setEventsViewMode] = useState<'detail' | 'list'>('detail');
@@ -23,6 +25,7 @@ export const App: React.FC = () => {
     setSelectedEventId(id);
     setEventsViewMode('detail');
     setCurrentPage('events');
+    setViewMode('single');
   };
 
   const handleNavigate = (page: PageId) => {
@@ -30,67 +33,89 @@ export const App: React.FC = () => {
       setEventsViewMode('detail');
     }
     setCurrentPage(page);
+    setViewMode('single');
+  };
+
+  const handleSelectScreenFromShowcase = (page: PageId) => {
+    if (page === 'events') {
+      setEventsViewMode('detail');
+    }
+    setCurrentPage(page);
+    setViewMode('single');
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50 text-slate-900 font-sans antialiased selection:bg-emerald-600 selection:text-white">
-      {/* Dark Sidebar matching Reference Design */}
-      <Sidebar
-        currentPage={currentPage}
-        onNavigate={handleNavigate}
-      />
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0">
-        <TopBar
-          onNavigate={handleNavigate}
-          onSelectEvent={handleSelectEvent}
-          onTriggerEmergency={() => setIsEmergencyModalOpen(true)}
+    <div className="min-h-screen font-sans antialiased selection:bg-emerald-600 selection:text-white">
+      {/* If Showcase Mode: Render Exact 9-Screen Layout matching media_1789648379971.png */}
+      {viewMode === 'showcase' ? (
+        <NineScreensShowcase
+          onSelectScreen={handleSelectScreenFromShowcase}
+          onOpenSingleApp={() => setViewMode('single')}
+          onTriggerEmergencyModal={() => setIsEmergencyModalOpen(true)}
         />
+      ) : (
+        /* Full Single-Screen Interactive Web Application */
+        <div className="flex min-h-screen bg-slate-50 text-slate-900">
+          {/* Dark Sidebar matching Reference Design */}
+          <Sidebar
+            currentPage={currentPage}
+            onNavigate={handleNavigate}
+          />
 
-        <main className="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto overflow-y-auto">
-          {currentPage === 'dashboard' && (
-            <DashboardPage
+          {/* Main Content Area */}
+          <div className="flex-1 flex flex-col min-w-0">
+            <TopBar
               onNavigate={handleNavigate}
-              onSelectEvent={(id) => {
-                if (id === 'FALL-10293') {
-                  setIsEmergencyModalOpen(true);
-                } else {
-                  handleSelectEvent(id);
-                }
-              }}
+              onSelectEvent={handleSelectEvent}
+              onTriggerEmergency={() => setIsEmergencyModalOpen(true)}
+              onShowOverview={() => setViewMode('showcase')}
             />
-          )}
 
-          {currentPage === 'monitoring' && <MonitoringPage />}
+            <main className="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto overflow-y-auto">
+              {currentPage === 'dashboard' && (
+                <DashboardPage
+                  onNavigate={handleNavigate}
+                  onSelectEvent={(id) => {
+                    if (id === 'FALL-10293') {
+                      setIsEmergencyModalOpen(true);
+                    } else {
+                      handleSelectEvent(id);
+                    }
+                  }}
+                />
+              )}
 
-          {(currentPage === 'events' || currentPage === 'event-detail') && (
-            eventsViewMode === 'detail' ? (
-              <EventDetailPage
-                eventId={selectedEventId}
-                onBack={() => setEventsViewMode('list')}
-              />
-            ) : (
-              <EventsPage
-                onNavigate={handleNavigate}
-                onSelectEvent={handleSelectEvent}
-              />
-            )
-          )}
+              {currentPage === 'monitoring' && <MonitoringPage />}
 
-          {currentPage === 'devices' && <DevicesPage />}
+              {(currentPage === 'events' || currentPage === 'event-detail') && (
+                eventsViewMode === 'detail' ? (
+                  <EventDetailPage
+                    eventId={selectedEventId}
+                    onBack={() => setEventsViewMode('list')}
+                  />
+                ) : (
+                  <EventsPage
+                    onNavigate={handleNavigate}
+                    onSelectEvent={handleSelectEvent}
+                  />
+                )
+              )}
 
-          {currentPage === 'users' && <UsersPage />}
+              {currentPage === 'devices' && <DevicesPage />}
 
-          {currentPage === 'agent' && <AgentConsolePage />}
+              {currentPage === 'users' && <UsersPage />}
 
-          {currentPage === 'knowledge' && <KnowledgeBasePage />}
+              {currentPage === 'agent' && <AgentConsolePage />}
 
-          {currentPage === 'analytics' && <AnalyticsPage />}
+              {currentPage === 'knowledge' && <KnowledgeBasePage />}
 
-          {currentPage === 'settings' && <SettingsPage />}
-        </main>
-      </div>
+              {currentPage === 'analytics' && <AnalyticsPage />}
+
+              {currentPage === 'settings' && <SettingsPage />}
+            </main>
+          </div>
+        </div>
+      )}
 
       {/* Emergency Fall Detected Modal matching Screen 5 */}
       <EmergencyFallModal
